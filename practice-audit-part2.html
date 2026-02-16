@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confident Rate Setting - TYTTP Practice Audit Part 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(52, 14, 40, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #340e28;
+            color: white;
+            padding: 40px 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+
+        .form-content {
+            padding: 40px;
+        }
+
+        /* Callout box for prep notice */
+        .callout-box {
+            background: #f9f5f7;
+            border: 2px solid #340e28;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #340e28;
+        }
+
+        .callout-box strong {
+            font-weight: 600;
+        }
+
+        /* Purpose statement */
+        .purpose-statement {
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* Section headings */
+        .section-heading {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #340e28;
+            margin-top: 35px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #340e28;
+        }
+
+        .section-intro {
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #340e28;
+            font-size: 1.05em;
+        }
+
+        .question-number {
+            color: #340e28;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="url"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        input[type="url"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #340e28;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-item:hover {
+            border-color: #340e28;
+            background: #faf8f9;
+        }
+
+        .radio-item input[type="radio"] {
+            margin-right: 12px;
+            margin-top: 3px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: #340e28;
+        }
+
+        .radio-item label {
+            cursor: pointer;
+            font-weight: 400;
+            margin: 0;
+            flex: 1;
+        }
+
+        /* Auto-calculated display fields */
+        .calculated-field {
+            background: #f9f5f7;
+            border: 2px solid #e0d4db;
+            border-radius: 6px;
+            padding: 12px 15px;
+            font-size: 1em;
+            color: #340e28;
+            font-weight: 500;
+        }
+
+        .calculated-field.positive {
+            color: #b35900;
+        }
+
+        .calculated-field.aligned {
+            color: #2e7d32;
+        }
+
+        /* Training entry rows */
+        .training-entries-container {
+            margin-bottom: 20px;
+        }
+
+        .training-entry {
+            background: #faf8f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .training-entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .training-entry-number {
+            font-weight: 600;
+            color: #340e28;
+            font-size: 1em;
+        }
+
+        .remove-training-btn {
+            background: none;
+            border: 1px solid #ccc;
+            color: #999;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .remove-training-btn:hover {
+            border-color: #c33;
+            color: #c33;
+            background: #fff5f5;
+        }
+
+        .training-entry-fields {
+            display: grid;
+            gap: 12px;
+        }
+
+        .training-entry-fields .field-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .training-entry-fields .field-group label {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .training-entry-fields input {
+            padding: 10px 12px;
+            font-size: 0.95em;
+        }
+
+        .training-row-calc {
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #340e28;
+            font-weight: 500;
+        }
+
+        .add-training-btn {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: #340e28;
+            border: 2px dashed #340e28;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 30px;
+        }
+
+        .add-training-btn:hover {
+            background: #faf8f9;
+        }
+
+        .add-training-btn:disabled {
+            border-color: #ccc;
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Summary panels */
+        .summary-panel {
+            background: #f9f5f7;
+            border: 2px solid #340e28;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+            margin-bottom: 25px;
+        }
+
+        .summary-panel h3 {
+            color: #340e28;
+            font-size: 1.15em;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #d4c4cc;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ece4e8;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #340e28;
+            margin-top: 5px;
+            padding-top: 12px;
+            font-weight: 600;
+        }
+
+        .summary-label {
+            color: #555;
+            font-size: 0.95em;
+            flex: 1;
+        }
+
+        .summary-value {
+            color: #340e28;
+            font-weight: 600;
+            font-size: 1.05em;
+            text-align: right;
+            min-width: 100px;
+        }
+
+        .summary-row.total .summary-label,
+        .summary-row.total .summary-value {
+            color: #340e28;
+            font-size: 1.05em;
+        }
+
+        .summary-insight {
+            margin-top: 18px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .summary-insight strong {
+            color: #340e28;
+        }
+
+        /* Submit button */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: #340e28;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: #4a1438;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 14, 40, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .success-message.visible {
+            display: block;
+        }
+
+        .success-message h2 {
+            color: #340e28;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .success-message p {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.visible {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #340e28;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            display: none;
+            background: #fee;
+            border: 2px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 30px 20px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.6em;
+            }
+
+            .header p {
+                font-size: 1em;
+            }
+
+            .form-content {
+                padding: 30px 20px;
+            }
+
+            .summary-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .summary-value {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Practice Audit Part 2</h1>
+            <p>Confident Rate Setting</p>
+        </div>
+
+        <div class="form-content" id="formContent">
+
+            <!-- Prep Notice Callout -->
+            <div class="callout-box">
+                Before you begin, make sure you have completed the Practice Audit Part 2 Prep Guide which can be found in the downloads section of the Practice Audit Part 2 course lesson. <strong>Once you've completed the Prep Guide, the audit itself should take less than 15 minutes.</strong>
+            </div>
+
+            <!-- Purpose Statement -->
+            <div class="purpose-statement">
+                This audit helps you put a real dollar value on your professional development. Most trauma therapists invest thousands of dollars and hundreds of hours in advanced training but never calculate how that investment impacts your pay rate. By the end of this audit, you will see your total training investment, what it means on a per-session basis, and how it connects to the rate the CTT Rate Calculator recommended for you.
+            </div>
+
+            <form id="practiceAuditForm2">
+
+                <!-- Email (for data matching) -->
+                <div class="form-group">
+                    <label><span class="question-number">1.</span> What is your email address?</label>
+                    <input type="email" name="emailAddress" required>
+                </div>
+
+                <!-- ==================== SECTION 1 ==================== -->
+                <h2 class="section-heading">Your Current Rate</h2>
+
+                <!-- Question 2 -->
+                <div class="form-group">
+                    <label><span class="question-number">2.</span> What is your advertised private pay rate?</label>
+                    <input type="number" id="currentRate" name="currentRate" min="0" placeholder="$" required oninput="recalculate()">
+                </div>
+
+                <!-- Question 3 -->
+                <div class="form-group">
+                    <label><span class="question-number">3.</span> Have you raised your rates in the past year?</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="raised1" name="raisedRates" value="Yes" required>
+                            <label for="raised1">Yes</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="raised2" name="raisedRates" value="No">
+                            <label for="raised2">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="form-group">
+                    <label><span class="question-number">4.</span> Do you believe your current rates reflect your expertise?</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="reflects1" name="ratesReflectExpertise" value="Yes" required>
+                            <label for="reflects1">Yes</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="reflects2" name="ratesReflectExpertise" value="No">
+                            <label for="reflects2">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="form-group">
+                    <label><span class="question-number">5.</span> On average, how many clients do you see in a typical week?</label>
+                    <input type="number" id="weeklyClients" name="weeklyClients" min="0" required oninput="recalculate()">
+                </div>
+
+                <!-- ==================== SECTION 2 ==================== -->
+                <h2 class="section-heading">Your Calculator Results</h2>
+
+                <!-- Question 6 -->
+                <div class="form-group">
+                    <label><span class="question-number">6.</span> What was the LOW end of the rate the CTT Rate Calculator gave you?</label>
+                    <input type="number" id="calcLow" name="calcRateLow" min="0" placeholder="$" required>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="form-group">
+                    <label><span class="question-number">7.</span> What was the AVERAGE rate the CTT Rate Calculator gave you?</label>
+                    <input type="number" id="calcAvg" name="calcRateAvg" min="0" placeholder="$" required oninput="recalculate()">
+                </div>
+
+                <!-- Question 8 -->
+                <div class="form-group">
+                    <label><span class="question-number">8.</span> What was the HIGH end of the rate the CTT Rate Calculator gave you?</label>
+                    <input type="number" id="calcHigh" name="calcRateHigh" min="0" placeholder="$" required>
+                </div>
+
+                <!-- Rate Gap (auto-calculated) -->
+                <div class="form-group">
+                    <label>Rate Gap</label>
+                    <div id="rateGapDisplay" class="calculated-field">Enter your current rate and calculator average to see the gap.</div>
+                </div>
+
+                <!-- ==================== SECTION 3 ==================== -->
+                <h2 class="section-heading">Your Training Investments</h2>
+
+                <div class="section-intro">
+                    In the section below, list the trainings and certifications you have completed during the time period you select. For each entry, include the cost of the training and the total hours you spent attending it.<br><br>
+                    If you completed multiple shorter workshops in a similar area, you can combine them into a single entry. For example, you could enter "EMDR Advanced Workshops" and provide the total cost and total hours across all of those workshops combined. This keeps the list manageable while still capturing your full investment.
+                </div>
+
+                <!-- Question 9 -->
+                <div class="form-group">
+                    <label><span class="question-number">9.</span> How many years of training records were you able to gather?</label>
+                    <select id="yearsOfRecords" name="yearsOfRecords" required onchange="recalculate()">
+                        <option value="" disabled selected>Select...</option>
+                        <option value="1">1 year</option>
+                        <option value="2">2 years</option>
+                        <option value="3">3 years</option>
+                        <option value="4">4 years</option>
+                        <option value="5">5 years</option>
+                    </select>
+                </div>
+
+                <!-- Training Entries (repeating group) -->
+                <label style="display:block; margin-bottom: 15px; font-weight: 500; color: #340e28; font-size: 1.05em;">
+                    <span class="question-number">10.</span> Your trainings and certifications
+                </label>
+
+                <div id="trainingEntriesContainer" class="training-entries-container">
+                    <!-- First entry (always visible, not removable) -->
+                    <div class="training-entry" data-index="1">
+                        <div class="training-entry-header">
+                            <span class="training-entry-number">Training 1</span>
+                        </div>
+                        <div class="training-entry-fields">
+                            <div class="field-group">
+                                <label>Training or certification name</label>
+                                <input type="text" name="trainingName_1" placeholder="e.g., EMDR Basic Training">
+                            </div>
+                            <div class="field-group">
+                                <label>Cost of the training ($)</label>
+                                <input type="number" name="trainingCost_1" min="0" placeholder="$" oninput="recalculate()">
+                            </div>
+                            <div class="field-group">
+                                <label>Hours spent attending</label>
+                                <input type="number" name="trainingHours_1" min="0" placeholder="Hours" oninput="recalculate()">
+                            </div>
+                            <div class="training-row-calc">
+                                Opportunity cost: <span id="oppCost_1">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="addTrainingBtn" class="add-training-btn" onclick="addTrainingEntry()">
+                    + Add Another Training
+                </button>
+
+                <!-- Question 11 -->
+                <div class="form-group">
+                    <label><span class="question-number">11.</span> During the same time period, how much have you spent on consultation or supervision?</label>
+                    <input type="number" id="consultationCost" name="consultationCost" min="0" placeholder="$" oninput="recalculate()">
+                </div>
+
+                <!-- Question 12 -->
+                <div class="form-group">
+                    <label><span class="question-number">12.</span> During the same time period, how much have you spent on books and professional reading materials?</label>
+                    <input type="number" id="booksCost" name="booksCost" min="0" placeholder="$" oninput="recalculate()">
+                </div>
+
+                <!-- ==================== SUMMARY: TRAINING INVESTMENT ==================== -->
+                <div class="summary-panel" id="investmentSummary">
+                    <h3>Your Training Investment</h3>
+                    <div class="summary-row">
+                        <span class="summary-label">Direct training costs</span>
+                        <span class="summary-value" id="sumDirectCosts">$0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Consultation &amp; supervision</span>
+                        <span class="summary-value" id="sumConsultation">$0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Books &amp; reading materials</span>
+                        <span class="summary-value" id="sumBooks">$0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Income not earned while training</span>
+                        <span class="summary-value" id="sumOpportunityCost">$0</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span class="summary-label">Total Training Investment</span>
+                        <span class="summary-value" id="sumTotal">$0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Average Annual Training Investment</span>
+                        <span class="summary-value" id="sumAnnual">$0</span>
+                    </div>
+                </div>
+
+                <!-- ==================== SUMMARY: RATE IMPACT ==================== -->
+                <div class="summary-panel" id="rateImpactSummary">
+                    <h3>What This Means for Your Rate</h3>
+                    <div class="summary-row">
+                        <span class="summary-label">Your average annual training investment</span>
+                        <span class="summary-value" id="impactAnnual">$0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Baseline CE maintenance (industry standard)</span>
+                        <span class="summary-value" id="impactBaseline">-$500</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Investment above basic CE requirements</span>
+                        <span class="summary-value" id="impactAboveBaseline">$0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Estimated annual sessions (48 weeks)</span>
+                        <span class="summary-value" id="impactSessions">0</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span class="summary-label">Per-Session Training Investment</span>
+                        <span class="summary-value" id="impactPerSession">$0</span>
+                    </div>
+                    <div class="summary-insight" id="impactInsight">
+                        Enter your information above to see what your training investment means on a per-session basis.
+                    </div>
+                </div>
+
+                <!-- ==================== FINAL SUMMARY ==================== -->
+                <div class="summary-panel" id="finalSummary">
+                    <h3>Your Rate Setting Summary</h3>
+                    <div class="summary-row">
+                        <span class="summary-label">Your current rate</span>
+                        <span class="summary-value" id="finalCurrentRate">$0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">CTT Calculator average rate</span>
+                        <span class="summary-value" id="finalCalcAvg">$0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Difference</span>
+                        <span class="summary-value" id="finalRateGap">$0</span>
+                    </div>
+                    <div class="summary-row" style="border-top: 1px solid #d4c4cc; margin-top: 8px; padding-top: 12px;">
+                        <span class="summary-label">Average training investment per year</span>
+                        <span class="summary-value" id="finalAnnualInvestment">$0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Per-session training investment</span>
+                        <span class="summary-value" id="finalPerSession">$0</span>
+                    </div>
+                </div>
+
+                <div id="errorMessage" class="error-message"></div>
+
+                <button type="submit" class="submit-btn">Submit Your Rate Setting Audit</button>
+            </form>
+
+            <div class="loading" id="loadingMessage">
+                <div class="spinner"></div>
+                <p style="margin-top: 20px; color: #340e28;">Submitting your responses...</p>
+            </div>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <h2>Thank You!</h2>
+            <p>Your Confident Rate Setting audit has been successfully submitted.</p>
+            <p>Take a moment to reflect on what the numbers are telling you. Your training investment is real, and your rate should reflect it.</p>
+        </div>
+    </div>
+
+    <script>
+        let trainingCount = 1;
+        const maxTrainings = 20;
+
+        // ==================== TRAINING ENTRY MANAGEMENT ====================
+
+        function addTrainingEntry() {
+            if (trainingCount >= maxTrainings) return;
+            trainingCount++;
+
+            const container = document.getElementById('trainingEntriesContainer');
+            const entry = document.createElement('div');
+            entry.className = 'training-entry';
+            entry.setAttribute('data-index', trainingCount);
+            entry.innerHTML = `
+                <div class="training-entry-header">
+                    <span class="training-entry-number">Training ${trainingCount}</span>
+                    <button type="button" class="remove-training-btn" onclick="removeTrainingEntry(this)">Remove</button>
+                </div>
+                <div class="training-entry-fields">
+                    <div class="field-group">
+                        <label>Training or certification name</label>
+                        <input type="text" name="trainingName_${trainingCount}" placeholder="e.g., Somatic Experiencing Level 1">
+                    </div>
+                    <div class="field-group">
+                        <label>Cost of the training ($)</label>
+                        <input type="number" name="trainingCost_${trainingCount}" min="0" placeholder="$" oninput="recalculate()">
+                    </div>
+                    <div class="field-group">
+                        <label>Hours spent attending</label>
+                        <input type="number" name="trainingHours_${trainingCount}" min="0" placeholder="Hours" oninput="recalculate()">
+                    </div>
+                    <div class="training-row-calc">
+                        Opportunity cost: <span id="oppCost_${trainingCount}">$0</span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(entry);
+
+            if (trainingCount >= maxTrainings) {
+                document.getElementById('addTrainingBtn').disabled = true;
+            }
+
+            renumberTrainingEntries();
+        }
+
+        function removeTrainingEntry(btn) {
+            const entry = btn.closest('.training-entry');
+            entry.remove();
+            trainingCount--;
+            document.getElementById('addTrainingBtn').disabled = false;
+            renumberTrainingEntries();
+            recalculate();
+        }
+
+        function renumberTrainingEntries() {
+            const entries = document.querySelectorAll('.training-entry');
+            entries.forEach((entry, index) => {
+                const num = index + 1;
+                entry.setAttribute('data-index', num);
+                entry.querySelector('.training-entry-number').textContent = `Training ${num}`;
+
+                // Update name attributes
+                const nameInput = entry.querySelector('input[type="text"]');
+                const costInput = entry.querySelectorAll('input[type="number"]')[0];
+                const hoursInput = entry.querySelectorAll('input[type="number"]')[1];
+                const oppCostSpan = entry.querySelector('.training-row-calc span');
+
+                if (nameInput) nameInput.name = `trainingName_${num}`;
+                if (costInput) costInput.name = `trainingCost_${num}`;
+                if (hoursInput) hoursInput.name = `trainingHours_${num}`;
+                if (oppCostSpan) oppCostSpan.id = `oppCost_${num}`;
+
+                // Remove the "Remove" button from first entry
+                const removeBtn = entry.querySelector('.remove-training-btn');
+                if (index === 0 && removeBtn) {
+                    removeBtn.remove();
+                }
+            });
+            trainingCount = entries.length;
+        }
+
+        // ==================== CALCULATIONS ====================
+
+        function formatCurrency(amount) {
+            return '$' + Math.round(amount).toLocaleString();
+        }
+
+        function recalculate() {
+            const currentRate = parseFloat(document.getElementById('currentRate').value) || 0;
+            const calcAvg = parseFloat(document.getElementById('calcAvg').value) || 0;
+            const weeklyClients = parseFloat(document.getElementById('weeklyClients').value) || 0;
+            const years = parseInt(document.getElementById('yearsOfRecords').value) || 0;
+            const consultationCost = parseFloat(document.getElementById('consultationCost').value) || 0;
+            const booksCost = parseFloat(document.getElementById('booksCost').value) || 0;
+
+            // --- Rate Gap ---
+            const gapDisplay = document.getElementById('rateGapDisplay');
+            if (currentRate > 0 && calcAvg > 0) {
+                const gap = calcAvg - currentRate;
+                if (gap > 0) {
+                    gapDisplay.textContent = `Your current rate is ${formatCurrency(gap)} below your calculator average.`;
+                    gapDisplay.className = 'calculated-field positive';
+                } else if (gap === 0) {
+                    gapDisplay.textContent = 'Your current rate matches your calculator average.';
+                    gapDisplay.className = 'calculated-field aligned';
+                } else {
+                    gapDisplay.textContent = `Your current rate is ${formatCurrency(Math.abs(gap))} above your calculator average.`;
+                    gapDisplay.className = 'calculated-field aligned';
+                }
+            } else {
+                gapDisplay.textContent = 'Enter your current rate and calculator average to see the gap.';
+                gapDisplay.className = 'calculated-field';
+            }
+
+            // --- Training Entry Calculations ---
+            let totalDirectCosts = 0;
+            let totalOpportunityCost = 0;
+
+            const entries = document.querySelectorAll('.training-entry');
+            entries.forEach((entry, index) => {
+                const num = index + 1;
+                const costInput = entry.querySelectorAll('input[type="number"]')[0];
+                const hoursInput = entry.querySelectorAll('input[type="number"]')[1];
+                const cost = parseFloat(costInput?.value) || 0;
+                const hours = parseFloat(hoursInput?.value) || 0;
+                const oppCost = hours * calcAvg;
+
+                totalDirectCosts += cost;
+                totalOpportunityCost += oppCost;
+
+                const oppCostSpan = document.getElementById(`oppCost_${num}`);
+                if (oppCostSpan) {
+                    oppCostSpan.textContent = formatCurrency(oppCost);
+                }
+            });
+
+            // --- Investment Summary ---
+            const totalAllDirect = totalDirectCosts + consultationCost + booksCost;
+            const totalInvestment = totalAllDirect + totalOpportunityCost;
+            const annualInvestment = years > 0 ? totalInvestment / years : 0;
+
+            document.getElementById('sumDirectCosts').textContent = formatCurrency(totalDirectCosts);
+            document.getElementById('sumConsultation').textContent = formatCurrency(consultationCost);
+            document.getElementById('sumBooks').textContent = formatCurrency(booksCost);
+            document.getElementById('sumOpportunityCost').textContent = formatCurrency(totalOpportunityCost);
+            document.getElementById('sumTotal').textContent = formatCurrency(totalInvestment);
+            document.getElementById('sumAnnual').textContent = years > 0 ? formatCurrency(annualInvestment) : '$0';
+
+            // --- Rate Impact Summary ---
+            const baselineCE = 500;
+            const aboveBaseline = Math.max(0, annualInvestment - baselineCE);
+            const annualSessions = weeklyClients * 48;
+            const perSession = annualSessions > 0 ? aboveBaseline / annualSessions : 0;
+
+            document.getElementById('impactAnnual').textContent = formatCurrency(annualInvestment);
+            document.getElementById('impactAboveBaseline').textContent = formatCurrency(aboveBaseline);
+            document.getElementById('impactSessions').textContent = annualSessions > 0 ? annualSessions.toLocaleString() : '0';
+            document.getElementById('impactPerSession').textContent = formatCurrency(perSession);
+
+            // Insight text
+            const insightDiv = document.getElementById('impactInsight');
+            if (annualSessions > 0 && aboveBaseline > 0) {
+                insightDiv.innerHTML = `Beyond the basic continuing education required to maintain your license, you are investing approximately <strong>${formatCurrency(perSession)}</strong> per session in advanced training and professional development. This is the investment in specialized expertise that your rate should reflect.`;
+            } else {
+                insightDiv.textContent = 'Enter your information above to see what your training investment means on a per-session basis.';
+            }
+
+            // --- Final Summary ---
+            document.getElementById('finalCurrentRate').textContent = currentRate > 0 ? formatCurrency(currentRate) : '$0';
+            document.getElementById('finalCalcAvg').textContent = calcAvg > 0 ? formatCurrency(calcAvg) : '$0';
+
+            if (currentRate > 0 && calcAvg > 0) {
+                const gap = calcAvg - currentRate;
+                if (gap > 0) {
+                    document.getElementById('finalRateGap').textContent = formatCurrency(gap) + ' below';
+                    document.getElementById('finalRateGap').style.color = '#b35900';
+                } else if (gap === 0) {
+                    document.getElementById('finalRateGap').textContent = 'Aligned';
+                    document.getElementById('finalRateGap').style.color = '#2e7d32';
+                } else {
+                    document.getElementById('finalRateGap').textContent = formatCurrency(Math.abs(gap)) + ' above';
+                    document.getElementById('finalRateGap').style.color = '#2e7d32';
+                }
+            } else {
+                document.getElementById('finalRateGap').textContent = '$0';
+                document.getElementById('finalRateGap').style.color = '';
+            }
+
+            document.getElementById('finalAnnualInvestment').textContent = years > 0 ? formatCurrency(annualInvestment) : '$0';
+            document.getElementById('finalPerSession').textContent = annualSessions > 0 && aboveBaseline > 0 ? formatCurrency(perSession) : '$0';
+        }
+
+        // ==================== FORM SUBMISSION ====================
+
+        document.getElementById('practiceAuditForm2').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Show loading, hide form
+            document.getElementById('formContent').style.display = 'none';
+            document.getElementById('loadingMessage').classList.add('visible');
+
+            const formData = new FormData(e.target);
+
+            // Collect training entries as array
+            const trainingEntries = [];
+            const entries = document.querySelectorAll('.training-entry');
+            const calcAvg = parseFloat(document.getElementById('calcAvg').value) || 0;
+
+            entries.forEach((entry, index) => {
+                const num = index + 1;
+                const name = formData.get(`trainingName_${num}`) || '';
+                const cost = formData.get(`trainingCost_${num}`) || '';
+                const hours = formData.get(`trainingHours_${num}`) || '';
+                if (name || cost || hours) {
+                    trainingEntries.push({
+                        name: name,
+                        cost: cost,
+                        hours: hours,
+                        opportunityCost: Math.round((parseFloat(hours) || 0) * calcAvg)
+                    });
+                }
+            });
+
+            // Format training entries as readable text for the spreadsheet
+            let trainingFormatted = '';
+            if (trainingEntries.length > 0) {
+                const lines = [];
+                for (let i = 0; i < trainingEntries.length; i++) {
+                    const t = trainingEntries[i];
+                    lines.push((i + 1) + '. ' + t.name + ' | Cost: $' + t.cost + ' | Hours: ' + t.hours + ' | Opportunity Cost: $' + t.opportunityCost);
+                }
+                trainingFormatted = lines.join('\n');
+            }
+
+            // Calculate summary values
+            const years = parseInt(document.getElementById('yearsOfRecords').value) || 1;
+            const weeklyClients = parseFloat(document.getElementById('weeklyClients').value) || 0;
+            const consultationCost = parseFloat(document.getElementById('consultationCost').value) || 0;
+            const booksCost = parseFloat(document.getElementById('booksCost').value) || 0;
+
+            let totalDirectCosts = 0;
+            let totalOpportunityCost = 0;
+            trainingEntries.forEach(t => {
+                totalDirectCosts += parseFloat(t.cost) || 0;
+                totalOpportunityCost += t.opportunityCost;
+            });
+
+            const totalAllDirect = totalDirectCosts + consultationCost + booksCost;
+            const totalInvestment = totalAllDirect + totalOpportunityCost;
+            const annualInvestment = totalInvestment / years;
+            const aboveBaseline = Math.max(0, annualInvestment - 500);
+            const annualSessions = weeklyClients * 48;
+            const perSession = annualSessions > 0 ? aboveBaseline / annualSessions : 0;
+            const currentRate = parseFloat(document.getElementById('currentRate').value) || 0;
+            const rateGap = calcAvg - currentRate;
+
+            const data = {
+                timestamp: new Date().toISOString(),
+                emailAddress: formData.get('emailAddress'),
+                currentRate: formData.get('currentRate'),
+                raisedRates: formData.get('raisedRates'),
+                ratesReflectExpertise: formData.get('ratesReflectExpertise'),
+                weeklyClients: formData.get('weeklyClients'),
+                calcRateLow: formData.get('calcRateLow'),
+                calcRateAvg: formData.get('calcRateAvg'),
+                calcRateHigh: formData.get('calcRateHigh'),
+                rateGap: Math.round(rateGap),
+                yearsOfRecords: formData.get('yearsOfRecords'),
+                trainingEntries: trainingFormatted,
+                trainingCount: trainingEntries.length,
+                consultationCost: formData.get('consultationCost') || '0',
+                booksCost: formData.get('booksCost') || '0',
+                totalDirectCosts: Math.round(totalDirectCosts),
+                totalOpportunityCost: Math.round(totalOpportunityCost),
+                totalInvestment: Math.round(totalInvestment),
+                annualInvestment: Math.round(annualInvestment),
+                aboveBaselineInvestment: Math.round(aboveBaseline),
+                annualSessions: annualSessions,
+                perSessionInvestment: Math.round(perSession * 100) / 100
+            };
+
+            try {
+                // REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbzqTDiYQKW4m66Fzs4jzJRUwwOfQ0yR6rs8MZ_ngCGS_w_025IYtLDlqAQF4qEzBFZP/exec';
+                
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Hide loading
+                document.getElementById('loadingMessage').classList.remove('visible');
+                
+                // Show success message
+                document.getElementById('successMessage').classList.add('visible');
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingMessage').classList.remove('visible');
+                document.getElementById('formContent').style.display = 'block';
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = 'There was an error submitting your form. Please try again.';
+                errorDiv.classList.add('visible');
+            }
+        });
+    </script>
+</body>
+</html>
