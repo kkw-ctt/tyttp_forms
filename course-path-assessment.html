@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find Your Course Path | TYTTP Foundations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --deep-plum: #340e28;
+      --teal-black: #042a2b;
+      --blush-rose: #e3b8b2;
+      --warm-sand: #b8a382;
+      --sage: #a8b7a0;
+      --emerald: #007f5f;
+      --white: #ffffff;
+      --off-white: #faf8f5;
+      --light-sage: #e8eee6;
+      --light-blush: #f7eeec;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--off-white);
+      color: var(--teal-black);
+      min-height: 100vh;
+    }
+    /* ── HEADER ── */
+    .site-header {
+      background: var(--deep-plum);
+      padding: 28px 32px;
+      text-align: center;
+    }
+    .site-header .eyebrow {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--blush-rose); margin-bottom: 8px;
+    }
+    .site-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 4vw, 34px);
+      color: var(--white); font-weight: 600; line-height: 1.2; margin-bottom: 8px;
+    }
+    .site-header .subtitle { color: var(--warm-sand); font-size: 14px; font-weight: 300; }
+    /* ── BODY ── */
+    .container { max-width: 760px; margin: 0 auto; padding: 36px 24px 64px; }
+    /* ── PROGRESS ── */
+    .progress-wrap { display: none; margin-bottom: 32px; }
+    .progress-wrap.visible { display: block; }
+    .progress-label { font-size: 12px; color: var(--warm-sand); text-align: right; margin-bottom: 6px; font-weight: 500; }
+    .progress-track { background: var(--light-sage); border-radius: 50px; height: 8px; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, var(--emerald), var(--sage)); height: 100%; border-radius: 50px; transition: width 0.5s ease; width: 0%; }
+    /* ── SCREENS ── */
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn 0.35s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    /* ── WELCOME ── */
+    .welcome-card { background: var(--white); border-radius: 16px; padding: 44px 40px; box-shadow: 0 4px 24px rgba(52,14,40,0.08); }
+    .module-tag { display: inline-block; background: var(--light-blush); color: var(--deep-plum); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 6px 14px; border-radius: 50px; margin-bottom: 20px; }
+    .welcome-card h2 { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3.5vw, 30px); color: var(--deep-plum); margin-bottom: 16px; line-height: 1.3; font-weight: 600; }
+    .welcome-card p { font-size: 15px; line-height: 1.8; color: var(--teal-black); margin-bottom: 14px; }
+    .expect-box { background: var(--light-sage); border-radius: 12px; padding: 20px 24px; margin: 22px 0; }
+    .expect-box p { margin-bottom: 6px; font-size: 14px; }
+    .expect-box p:last-child { margin-bottom: 0; }
+    .expect-box strong { color: var(--deep-plum); }
+    .hint { font-size: 13px; color: #999; margin-bottom: 0; }
+    /* ── MODULE HEADER ── */
+    .module-header { margin-bottom: 24px; }
+    .module-num { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--warm-sand); margin-bottom: 8px; }
+    .module-header h2 { font-family: 'Playfair Display', serif; font-size: clamp(20px, 3vw, 26px); color: var(--deep-plum); margin-bottom: 8px; font-weight: 600; }
+    .module-header p { font-size: 14px; color: #888; line-height: 1.6; }
+    /* ── QUESTION CARD ── */
+    .question-card { background: var(--white); border-radius: 16px; padding: 30px 34px; box-shadow: 0 4px 24px rgba(52,14,40,0.08); }
+    .prompt { font-size: 15px; font-weight: 500; color: var(--teal-black); margin-bottom: 20px; line-height: 1.6; }
+    /* ── CHECKLIST ── */
+    .check-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .check-item { position: relative; }
+    .check-item input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+    .check-label { display: flex; align-items: flex-start; gap: 14px; cursor: pointer; padding: 14px 18px; border-radius: 10px; border: 2px solid #e4dedd; transition: all 0.2s ease; background: var(--off-white); }
+    .check-label:hover { border-color: var(--sage); background: var(--light-sage); }
+    .check-item input:checked + .check-label { border-color: var(--deep-plum); background: var(--light-blush); }
+    .checkmark { width: 22px; height: 22px; min-width: 22px; border-radius: 6px; border: 2px solid #c8c2bc; background: white; display: flex; align-items: center; justify-content: center; margin-top: 1px; flex-shrink: 0; transition: all 0.2s ease; font-size: 13px; color: transparent; font-weight: 700; }
+    .check-item input:checked + .check-label .checkmark { background: var(--deep-plum); border-color: var(--deep-plum); color: white; }
+    .check-text { font-size: 14px; line-height: 1.65; color: var(--teal-black); }
+    /* ── NAV ── */
+    .nav-row { display: flex; gap: 12px; margin-top: 28px; align-items: center; flex-wrap: wrap; }
+    .btn { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; padding: 13px 28px; border-radius: 50px; border: none; cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.5px; }
+    .btn-primary { background: var(--emerald); color: white; }
+    .btn-primary:hover { background: #006b50; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,127,95,0.3); }
+    .btn-lg { font-size: 15px; padding: 15px 36px; }
+    .btn-outline { background: transparent; color: var(--warm-sand); border: 2px solid var(--warm-sand); }
+    .btn-outline:hover { background: var(--warm-sand); color: white; }
+    .skip-btn { background: none; border: none; color: #aaa; font-size: 13px; cursor: pointer; text-decoration: underline; font-family: 'Montserrat', sans-serif; margin-left: auto; padding: 0; }
+    .skip-btn:hover { color: var(--deep-plum); }
+    /* ── RESULTS HEADER ── */
+    .results-header { text-align: center; margin-bottom: 36px; }
+    .results-header .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--warm-sand); margin-bottom: 10px; display: block; }
+    .results-header h2 { font-family: 'Playfair Display', serif; font-size: clamp(22px, 4vw, 34px); color: var(--deep-plum); margin-bottom: 12px; font-weight: 600; }
+    .results-header p { font-size: 15px; color: #777; line-height: 1.7; max-width: 560px; margin: 0 auto; }
+    /* ── PATH SECTIONS ── */
+    .path-section { margin-bottom: 32px; }
+    .section-title { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--warm-sand); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #e8e2dc; display: block; }
+    /* ── MODULE CARD ── */
+    .mod-card { background: var(--white); border-radius: 14px; padding: 20px 24px; margin-bottom: 12px; box-shadow: 0 2px 12px rgba(52,14,40,0.06); display: flex; align-items: flex-start; gap: 16px; border-left: 5px solid transparent; }
+    .mod-card.high { border-left-color: var(--deep-plum); }
+    .mod-card.med  { border-left-color: var(--sage); }
+    .mod-card.low  { border-left-color: #ddd; opacity: 0.75; }
+    .mod-badge { width: 44px; height: 44px; min-width: 44px; border-radius: 50%; background: var(--light-blush); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 18px; color: var(--deep-plum); font-weight: 700; margin-top: 2px; flex-shrink: 0; }
+    .high .mod-badge { background: var(--deep-plum); color: white; }
+    .med  .mod-badge { background: var(--light-sage); color: var(--teal-black); }
+    .mod-info { flex: 1; min-width: 0; }
+    .mod-tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 12px; border-radius: 50px; margin-bottom: 7px; }
+    .tag-urgent  { background: var(--light-blush); color: var(--deep-plum); }
+    .tag-explore { background: var(--light-sage); color: #2e5a2e; }
+    .tag-solid   { background: #f0f0f0; color: #888; }
+    .mod-info h3 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--deep-plum); margin-bottom: 5px; font-weight: 600; }
+    .mod-info p  { font-size: 13px; color: #777; line-height: 1.65; margin: 0; }
+    .mod-note { margin-top: 8px; font-size: 12px; color: var(--warm-sand); font-style: italic; }
+    .score-dots { display: flex; gap: 4px; margin-top: 10px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #e8e2dc; display: inline-block; }
+    .dot.filled { background: var(--deep-plum); }
+    .med .dot.filled { background: var(--sage); }
+    /* ── SUMMARY BOX ── */
+    .summary-box { background: var(--deep-plum); border-radius: 16px; padding: 36px 40px; color: white; margin-top: 32px; text-align: center; }
+    .summary-box h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--blush-rose); margin-bottom: 14px; font-weight: 600; }
+    .summary-box p { font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.85); max-width: 540px; margin: 0 auto 20px; }
+    .path-pills { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; align-items: center; }
+    .pill { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 8px 18px; font-size: 13px; font-weight: 500; }
+    .pill-primary { background: var(--emerald); border-color: var(--emerald); font-weight: 600; }
+    .pill-arrow { color: var(--warm-sand); font-size: 16px; }
+    /* ── RESTART ── */
+    .restart-row { text-align: center; margin-top: 36px; }
+    .restart-btn { background: none; border: none; color: var(--warm-sand); font-size: 13px; text-decoration: underline; cursor: pointer; font-family: 'Montserrat', sans-serif; padding: 0; }
+    .restart-btn:hover { color: var(--deep-plum); }
+    /* ── FOOTER ── */
+    .site-footer { background: var(--teal-black); text-align: center; padding: 18px; font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; }
+    /* ── RESPONSIVE ── */
+    @media (max-width: 540px) {
+      .welcome-card, .question-card { padding: 22px 18px; }
+      .nav-row { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; text-align: center; }
+      .skip-btn { margin-left: 0; text-align: center; }
+      .summary-box { padding: 28px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <p class="eyebrow">Transform Your Trauma Therapy Practice</p>
+  <h1>Find Your Course Path</h1>
+  <p class="subtitle">A personalized guide to the Foundations Digital Course</p>
+</header>
+
+<main class="container" id="mainContainer">
+
+  <div class="progress-wrap" id="progressWrap">
+    <p class="progress-label" id="progressLabel">Module 1 of 7</p>
+    <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+  </div>
+
+  <!-- WELCOME -->
+  <div class="screen active" id="screen-welcome">
+    <div class="welcome-card">
+      <span class="module-tag">Course Assessment</span>
+      <h2>Let's find where to start</h2>
+      <p>This course is designed so you don't have to watch it from beginning to end. You're a busy clinician, and your time is valuable. This quick assessment will help you figure out exactly where to focus first.</p>
+      <p>For each module topic, check the statements that feel true for you right now. There are no right or wrong answers — just honest ones.</p>
+      <div class="expect-box">
+        <p><strong>7 modules</strong> &nbsp;&middot;&nbsp; Up to 5 statements each</p>
+        <p><strong>~5 minutes</strong> to complete</p>
+        <p><strong>Result:</strong> A personalized, prioritized course path</p>
+      </div>
+      <p class="hint">You can skip any section that clearly doesn't apply to you.</p>
+      <div class="nav-row">
+        <button class="btn btn-primary btn-lg" onclick="goNext(0)">Let's get started &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 1 -->
+  <div class="screen" id="screen-1">
+    <div class="module-header">
+      <p class="module-num">Module 1 &middot; Business Fundamentals</p>
+      <h2>The financial foundation of your practice</h2>
+      <p>Check any statements that feel true for you right now.</p>
+    </div>
+    <div class="question-card">
+      <p class="prompt">When it comes to the business side of your practice...</p>
+      <ul class="check-list">
+        <li class="check-item"><input type="checkbox" id="m1q1"><label class="check-label" for="m1q1"><span class="checkmark">&#10003;</span><span class="check-text">I'm not sure where my money actually goes each month.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m1q2"><label class="check-label" for="m1q2"><span class="checkmark">&#10003;</span><span class="check-text">I pay myself whatever's left over at the end of the month — or I don't have a consistent pay structure at all.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m1q3"><label class="check-label" for="m1q3"><span class="checkmark">&#10003;</span><span class="check-text">The words "business owner" feel uncomfortable or don't really fit my identity.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m1q4"><label class="check-label" for="m1q4"><span class="checkmark">&#10003;</span><span class="check-text">I have income coming in, but I still feel financially anxious most of the time.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m1q5"><label class="check-label" for="m1q5"><span class="checkmark">&#10003;</span><span class="check-text">I have little to no financial cushion for my business — no real savings or emergency fund.</span></label></li>
+      </ul>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goBack(1)">Back</button>
+      <button class="btn btn-primary" onclick="goNext(1)">Continue &rarr;</button>
+      <button class="skip-btn" onclick="goNext(1)">Skip this section</button>
+    </div>
+  </div>
+
+  <!-- MODULE 2 -->
+  <div class="screen" id="screen-2">
+    <div class="module-header">
+      <p class="module-num">Module 2 &middot; Confident Rate Setting</p>
+      <h2>What your expertise is actually worth</h2>
+      <p>Check any statements that feel true for you right now.</p>
+    </div>
+    <div class="question-card">
+      <p class="prompt">When it comes to your rates and compensation...</p>
+      <ul class="check-list">
+        <li class="check-item"><input type="checkbox" id="m2q1"><label class="check-label" for="m2q1"><span class="checkmark">&#10003;</span><span class="check-text">I set my current rate years ago and haven't raised it meaningfully since — even as my training and experience have grown.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m2q2"><label class="check-label" for="m2q2"><span class="checkmark">&#10003;</span><span class="check-text">I'm not confident that my rate actually reflects my specialization, certifications, or clinical experience.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m2q3"><label class="check-label" for="m2q3"><span class="checkmark">&#10003;</span><span class="check-text">The idea of raising my rates — especially with current clients — brings up real anxiety or guilt.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m2q4"><label class="check-label" for="m2q4"><span class="checkmark">&#10003;</span><span class="check-text">I'm not sure how my rates compare to other trauma therapists in my region or with my level of expertise.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m2q5"><label class="check-label" for="m2q5"><span class="checkmark">&#10003;</span><span class="check-text">I avoid talking about money with clients — it feels uncomfortable or unprofessional.</span></label></li>
+      </ul>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goBack(2)">Back</button>
+      <button class="btn btn-primary" onclick="goNext(2)">Continue &rarr;</button>
+      <button class="skip-btn" onclick="goNext(2)">Skip this section</button>
+    </div>
+  </div>
+
+  <!-- MODULE 3 -->
+  <div class="screen" id="screen-3">
+    <div class="module-header">
+      <p class="module-num">Module 3 &middot; Practice Policies</p>
+      <h2>Boundaries that protect your practice</h2>
+      <p>Check any statements that feel true for you right now.</p>
+    </div>
+    <div class="question-card">
+      <p class="prompt">When it comes to your practice policies...</p>
+      <ul class="check-list">
+        <li class="check-item"><input type="checkbox" id="m3q1"><label class="check-label" for="m3q1"><span class="checkmark">&#10003;</span><span class="check-text">I make exceptions to my policies so often that they don't really function as policies anymore.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m3q2"><label class="check-label" for="m3q2"><span class="checkmark">&#10003;</span><span class="check-text">Enforcing cancellation fees or chasing late payments feels awful — I often let it go to avoid conflict.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m3q3"><label class="check-label" for="m3q3"><span class="checkmark">&#10003;</span><span class="check-text">My sliding scale approach feels unclear, inconsistent, or is starting to build resentment in me.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m3q4"><label class="check-label" for="m3q4"><span class="checkmark">&#10003;</span><span class="check-text">Clients contact me between sessions in ways I'm not sure how to handle — by text, email, or voicemail at all hours.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m3q5"><label class="check-label" for="m3q5"><span class="checkmark">&#10003;</span><span class="check-text">I have a written informed consent, but I don't consistently communicate my policies clearly upfront.</span></label></li>
+      </ul>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goBack(3)">Back</button>
+      <button class="btn btn-primary" onclick="goNext(3)">Continue &rarr;</button>
+      <button class="skip-btn" onclick="goNext(3)">Skip this section</button>
+    </div>
+  </div>
+
+  <!-- MODULE 4 -->
+  <div class="screen" id="screen-4">
+    <div class="module-header">
+      <p class="module-num">Module 4 &middot; Caseload &amp; Schedule Optimization</p>
+      <h2>A schedule you actually designed</h2>
+      <p>Check any statements that feel true for you right now.</p>
+    </div>
+    <div class="question-card">
+      <p class="prompt">When it comes to your caseload and energy...</p>
+      <ul class="check-list">
+        <li class="check-item"><input type="checkbox" id="m4q1"><label class="check-label" for="m4q1"><span class="checkmark">&#10003;</span><span class="check-text">I'm consistently depleted by Thursday or Friday — the work is wearing me down.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m4q2"><label class="check-label" for="m4q2"><span class="checkmark">&#10003;</span><span class="check-text">My schedule feels like something that happened to me rather than something I consciously designed.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m4q3"><label class="check-label" for="m4q3"><span class="checkmark">&#10003;</span><span class="check-text">Taking real time off — vacation, sick days, personal days — is financially or logistically difficult.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m4q4"><label class="check-label" for="m4q4"><span class="checkmark">&#10003;</span><span class="check-text">When a session goes hard, it spills over and affects how present I can be in the sessions that follow.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m4q5"><label class="check-label" for="m4q5"><span class="checkmark">&#10003;</span><span class="check-text">I'm seeing as many clients as I can physically fit in — not as many as I can sustainably hold.</span></label></li>
+      </ul>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goBack(4)">Back</button>
+      <button class="btn btn-primary" onclick="goNext(4)">Continue &rarr;</button>
+      <button class="skip-btn" onclick="goNext(4)">Skip this section</button>
+    </div>
+  </div>
+
+  <!-- MODULE 5 -->
+  <div class="screen" id="screen-5">
+    <div class="module-header">
+      <p class="module-num">Module 5 &middot; Professional Development</p>
+      <h2>Depth over breadth in your growth</h2>
+      <p>Check any statements that feel true for you right now.</p>
+    </div>
+    <div class="question-card">
+      <p class="prompt">When it comes to your professional growth and support...</p>
+      <ul class="check-list">
+        <li class="check-item"><input type="checkbox" id="m5q1"><label class="check-label" for="m5q1"><span class="checkmark">&#10003;</span><span class="check-text">I feel pulled toward the next training before I've fully integrated the last one — and I know it.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m5q2"><label class="check-label" for="m5q2"><span class="checkmark">&#10003;</span><span class="check-text">I have certifications I rarely (or never) use in actual sessions.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m5q3"><label class="check-label" for="m5q3"><span class="checkmark">&#10003;</span><span class="check-text">I don't have a paid clinical consultant I meet with on a regular basis.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m5q4"><label class="check-label" for="m5q4"><span class="checkmark">&#10003;</span><span class="check-text">I feel isolated in the work — there's no one in my life who truly understands how hard trauma work is.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m5q5"><label class="check-label" for="m5q5"><span class="checkmark">&#10003;</span><span class="check-text">I don't have a clear vision for where my practice is heading in the next 3&ndash;5 years.</span></label></li>
+      </ul>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goBack(5)">Back</button>
+      <button class="btn btn-primary" onclick="goNext(5)">Continue &rarr;</button>
+      <button class="skip-btn" onclick="goNext(5)">Skip this section</button>
+    </div>
+  </div>
+
+  <!-- MODULE 6 -->
+  <div class="screen" id="screen-6">
+    <div class="module-header">
+      <p class="module-num">Module 6 &middot; Marketing &amp; Professional Visibility</p>
+      <h2>Connecting with the clients you do your best work with</h2>
+      <p>Check any statements that feel true for you right now.</p>
+    </div>
+    <div class="question-card">
+      <p class="prompt">When it comes to how clients find you and how you present your work...</p>
+      <ul class="check-list">
+        <li class="check-item"><input type="checkbox" id="m6q1"><label class="check-label" for="m6q1"><span class="checkmark">&#10003;</span><span class="check-text">My website is outdated, generic, or doesn't really reflect who I am as a clinician.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m6q2"><label class="check-label" for="m6q2"><span class="checkmark">&#10003;</span><span class="check-text">I'm not sure how to describe what I do in a way that genuinely connects with the right clients.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m6q3"><label class="check-label" for="m6q3"><span class="checkmark">&#10003;</span><span class="check-text">I don't have a clear specialization or niche — I work with a wide range of issues and I'm not sure how to position that.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m6q4"><label class="check-label" for="m6q4"><span class="checkmark">&#10003;</span><span class="check-text">I rarely (or never) get inquiries or referrals from my online presence.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m6q5"><label class="check-label" for="m6q5"><span class="checkmark">&#10003;</span><span class="check-text">The word "marketing" makes me uncomfortable — it feels at odds with my values as a therapist.</span></label></li>
+      </ul>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goBack(6)">Back</button>
+      <button class="btn btn-primary" onclick="goNext(6)">Continue &rarr;</button>
+      <button class="skip-btn" onclick="goNext(6)">Skip this section</button>
+    </div>
+  </div>
+
+  <!-- MODULE 7 -->
+  <div class="screen" id="screen-7">
+    <div class="module-header">
+      <p class="module-num">Module 7 &middot; Practice Evolution (Bonus)</p>
+      <h2>What becomes possible once your foundation is solid</h2>
+      <p>Check any statements that feel true for you right now.</p>
+    </div>
+    <div class="question-card">
+      <p class="prompt">When it comes to where your practice is heading...</p>
+      <ul class="check-list">
+        <li class="check-item"><input type="checkbox" id="m7q1"><label class="check-label" for="m7q1"><span class="checkmark">&#10003;</span><span class="check-text">My foundations feel mostly solid — I'm ready to think seriously about what comes next.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m7q2"><label class="check-label" for="m7q2"><span class="checkmark">&#10003;</span><span class="check-text">I've been thinking about adding intensives, a group offering, or a supervision/consultation component.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m7q3"><label class="check-label" for="m7q3"><span class="checkmark">&#10003;</span><span class="check-text">I want to create a revenue stream that doesn't require trading hours for dollars.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m7q4"><label class="check-label" for="m7q4"><span class="checkmark">&#10003;</span><span class="check-text">I feel ready to expand but I'm not sure where to focus my energy first.</span></label></li>
+        <li class="check-item"><input type="checkbox" id="m7q5"><label class="check-label" for="m7q5"><span class="checkmark">&#10003;</span><span class="check-text">I've already started building something beyond a traditional caseload — consulting, teaching, writing — and I want to develop it further.</span></label></li>
+      </ul>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goBack(7)">Back</button>
+      <button class="btn btn-primary btn-lg" onclick="showResults()">See My Course Path &rarr;</button>
+      <button class="skip-btn" onclick="showResults()">Skip &amp; see results</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="screen-results">
+    <div class="results-header">
+      <span class="eyebrow">Your Personalized Course Path</span>
+      <h2 id="resultsHeading">Here's where to start</h2>
+      <p id="resultsSubhead"></p>
+    </div>
+    <div class="path-section" id="section-high" style="display:none;">
+      <span class="section-title">Start Here &mdash; Your Most Urgent Modules</span>
+      <div id="cards-high"></div>
+    </div>
+    <div class="path-section" id="section-med" style="display:none;">
+      <span class="section-title">Worth Exploring &mdash; After Your Priorities</span>
+      <div id="cards-med"></div>
+    </div>
+    <div class="path-section" id="section-low" style="display:none;">
+      <span class="section-title">You're Solid Here &mdash; Skip or Skim</span>
+      <div id="cards-low"></div>
+    </div>
+    <div class="summary-box">
+      <h3>Your Recommended Path</h3>
+      <p id="summaryText"></p>
+      <div class="path-pills" id="pathPills"></div>
+    </div>
+    <div class="restart-row">
+      <button class="restart-btn" onclick="restartAssessment()">Retake the assessment</button>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  &copy; Curious Trauma Therapist &nbsp;&middot;&nbsp; Transform Your Trauma Therapy Practice
+</footer>
+
+<script>
+var MODULE_DATA = [
+  {num:1,title:"Business Fundamentals",desc:"Understand your income, expenses, and how to pay yourself consistently — the financial foundation everything else rests on.",bonus:false},
+  {num:2,title:"Confident Rate Setting",desc:"Use the TYTTP Rate Calculator to find your ethical private pay rate, and learn how to communicate increases without damaging relationships.",bonus:false},
+  {num:3,title:"Practice Policies",desc:"Build cancellation, payment, sliding scale, and between-session communication policies you can actually enforce — with confidence.",bonus:false},
+  {num:4,title:"Caseload & Schedule Optimization",desc:"Calculate your true sustainable caseload, design a schedule that protects your energy, and plan time off without financial anxiety.",bonus:false},
+  {num:5,title:"Professional Development",desc:"Shift from reactive training to strategic growth: depth over breadth, building your support team, and creating a 5-year clinical vision.",bonus:false},
+  {num:6,title:"Marketing & Professional Visibility",desc:"Define your niche, write website copy that connects with ideal clients, and get found — including by AI-powered search tools.",bonus:false},
+  {num:7,title:"Practice Evolution",desc:"Explore what comes next: intensives, groups, supervision, consulting, and other paths beyond the traditional therapy caseload. (Bonus module)",bonus:true}
+];
+
+function getScores(){
+  var s={};
+  for(var i=1;i<=7;i++){s[i]=0;for(var j=1;j<=5;j++){var el=document.getElementById('m'+i+'q'+j);if(el&&el.checked)s[i]++;}}
+  return s;
+}
+
+function scrollToTop(){
+  window.scrollTo({top:0,behavior:'smooth'});
+  // Also notify parent to scroll (for iframe use)
+  try{ window.parent.postMessage({type:'tyttp-scroll-top'},'*'); }catch(e){}
+}
+
+function notifyHeight(){
+  try{
+    var h = document.body.scrollHeight;
+    window.parent.postMessage({type:'tyttp-resize',height:h},'*');
+  }catch(e){}
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('screen-'+id).classList.add('active');
+  var wrap=document.getElementById('progressWrap');
+  var bar=document.getElementById('progressBar');
+  var lbl=document.getElementById('progressLabel');
+  if(id==='welcome'||id==='results'){
+    wrap.classList.remove('visible');
+  } else {
+    var n=parseInt(id,10);
+    wrap.classList.add('visible');
+    bar.style.width=((n/7)*100)+'%';
+    lbl.textContent='Module '+n+' of 7';
+  }
+  scrollToTop();
+  setTimeout(notifyHeight,100);
+}
+
+function goNext(n){if(n<7)showScreen(n+1);else showResults();}
+function goBack(n){if(n<=1)showScreen('welcome');else showScreen(n-1);}
+
+function showResults(){
+  var scores=getScores();
+  var total=0;for(var k in scores)total+=scores[k];
+  var foundTotal=scores[1]+scores[2]+scores[3]+scores[4]+scores[5]+scores[6];
+  var m7high=scores[7]>=3, needsFound=foundTotal>0;
+  var sorted=MODULE_DATA.map(function(m){return Object.assign({},m,{score:scores[m.num]});})
+    .sort(function(a,b){return b.score-a.score;});
+  sorted=sorted.map(function(m){
+    if(m.num===7&&m7high&&needsFound)return Object.assign({},m,{overrideNote:"Looks like you're ready for growth — finish your foundations first, then dive into this one."});
+    return m;
+  });
+  var high=sorted.filter(function(m){return m.score>=3&&!(m.num===7&&m.overrideNote);});
+  var med=sorted.filter(function(m){return m.score>=1&&m.score<3&&!(m.num===7&&m.overrideNote);});
+  var low=sorted.filter(function(m){return m.score===0||(m.num===7&&m.overrideNote);});
+  renderCards('cards-high',high,'high');
+  renderCards('cards-med',med,'med');
+  renderCards('cards-low',low,'low');
+  document.getElementById('section-high').style.display=high.length?'block':'none';
+  document.getElementById('section-med').style.display=med.length?'block':'none';
+  document.getElementById('section-low').style.display=low.length?'block':'none';
+  buildSummary(scores,high,med,total);
+  showScreen('results');
+}
+
+function renderCards(cid,mods,priority){
+  var c=document.getElementById(cid);c.innerHTML='';
+  mods.forEach(function(m){
+    var card=document.createElement('div');
+    card.className='mod-card '+priority;
+    var tagClass=priority==='high'?'tag-urgent':priority==='med'?'tag-explore':'tag-solid';
+    var tagText=priority==='high'?'Start Here':priority==='med'?'Worth Exploring':"You're Solid Here";
+    var dots='';
+    if(priority!=='low'){dots='<div class="score-dots">';for(var d=1;d<=5;d++){dots+='<span class="dot'+(d<=m.score?' filled':'')+'"></span>';}dots+='</div>';}
+    var note=m.overrideNote?'<p class="mod-note">'+m.overrideNote+'</p>':'';
+    var bonus=m.bonus?' <span style="font-size:11px;color:#b8a382;font-weight:500;">(Bonus)</span>':'';
+    card.innerHTML='<div class="mod-badge">'+m.num+'</div><div class="mod-info"><span class="mod-tag '+tagClass+'">'+tagText+'</span><h3>Module '+m.num+': '+m.title+bonus+'</h3><p>'+m.desc+'</p>'+dots+note+'</div>';
+    c.appendChild(card);
+  });
+}
+
+function buildSummary(scores,high,med,total){
+  var h=document.getElementById('resultsHeading'),sub=document.getElementById('resultsSubhead'),txt=document.getElementById('summaryText'),pills=document.getElementById('pathPills');
+  if(total===0){h.textContent="You're in great shape!";sub.textContent="You didn't check many items — your foundations may already be solid. Review the modules below to see if anything catches your attention.";txt.textContent="Browse the modules at your own pace. You can always revisit the assessment as your practice evolves.";pills.innerHTML='';return;}
+  if(high.length>=4){h.textContent="You've got a clear starting point";sub.textContent="Several areas are calling for your attention. Here's a prioritized path based on what you checked.";}
+  else if(high.length===0){h.textContent="You're closer than you think";sub.textContent="Nothing is critical right now — there are just a few areas worth exploring to strengthen your foundation.";}
+  else{h.textContent="Here's where to focus first";sub.textContent="Based on what you shared, here's your personalized path through the Foundations course.";}
+  var path=high.concat(med).filter(function(m){return!(m.num===7&&m.overrideNote);});
+  if(path.length===0){txt.textContent="The foundations modules all look solid. Skim through any that catch your attention, and save Module 7 for when you're curious about what comes next.";}
+  else{var names=path.map(function(m){return'Module '+m.num;});if(names.length===1){txt.textContent='Start with '+names[0]+', then move through the remaining modules at your own pace.';}else{var last=names.pop();txt.textContent='Work through '+names.join(' \u2192 ')+' \u2192 '+last+', then come back to skim anything you skipped.';}}
+  pills.innerHTML='';
+  path.forEach(function(m,i){
+    var pill=document.createElement('span');
+    pill.className='pill'+(i===0?' pill-primary':'');
+    pill.textContent='M'+m.num+': '+m.title;
+    pills.appendChild(pill);
+    if(i<path.length-1){var a=document.createElement('span');a.className='pill-arrow';a.textContent=' \u2192 ';pills.appendChild(a);}
+  });
+}
+
+function restartAssessment(){
+  document.querySelectorAll('input[type="checkbox"]').forEach(function(cb){cb.checked=false;});
+  ['section-high','section-med','section-low'].forEach(function(id){document.getElementById(id).style.display='none';});
+  showScreen('welcome');
+}
+
+// Send initial height to parent on load
+window.addEventListener('load', notifyHeight);
+</script>
+</body>
+</html>
